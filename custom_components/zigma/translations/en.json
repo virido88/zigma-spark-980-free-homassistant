@@ -1,0 +1,56 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zones",
+        "menu_options": {
+          "add_zone": "Add zone",
+          "remove_zone": "Remove zone"
+        }
+      },
+      "add_zone": {
+        "title": "New zone",
+        "description": "Rectangle in map cells.",
+        "data": {
+          "name": "Name",
+          "x": "X",
+          "y": "Y",
+          "width": "Width",
+          "height": "Height"
+        }
+      },
+      "remove_zone": {
+        "title": "Remove zone",
+        "data": {
+          "name": "Zone"
+        }
+      }
+    },
+    "error": {
+      "duplicate": "A zone with this name already exists"
+    },
+    "abort": {
+      "no_zones": "No zones defined"
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zigma robot",
+        "description": "Address and web token of the robot. The token is the one the web interface uses (changes when the web password changes).",
+        "data": {
+          "host": "Host / IP",
+          "port": "Port",
+          "token": "API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Robot not reachable",
+      "invalid_auth": "Token rejected"
+    },
+    "abort": {
+      "already_configured": "This robot is already configured"
+    }
+  }
+}

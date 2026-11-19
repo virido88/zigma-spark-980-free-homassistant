@@ -1,0 +1,11 @@
+{
+  "domain": "zigma",
+  "name": "Zigma Saugroboter",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/zigma",
+  "iot_class": "local_polling",
+  "integration_type": "device",
+  "requirements": [],
+  "version": "0.1.0"
+}

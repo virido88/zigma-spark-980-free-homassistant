@@ -1,0 +1,56 @@
+{
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zonen",
+        "menu_options": {
+          "add_zone": "Zone hinzufügen",
+          "remove_zone": "Zone entfernen"
+        }
+      },
+      "add_zone": {
+        "title": "Neue Zone",
+        "description": "Rechteck in Kartenzellen. Die Werte bekommst du aus der Karte im Webinterface oder durch Ausprobieren.",
+        "data": {
+          "name": "Name",
+          "x": "X",
+          "y": "Y",
+          "width": "Breite",
+          "height": "Höhe"
+        }
+      },
+      "remove_zone": {
+        "title": "Zone entfernen",
+        "data": {
+          "name": "Zone"
+        }
+      }
+    },
+    "error": {
+      "duplicate": "Eine Zone mit diesem Namen existiert bereits"
+    },
+    "abort": {
+      "no_zones": "Keine Zonen vorhanden"
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zigma-Roboter",
+        "description": "Adresse und Web-Token des Roboters. Das Token ist dasselbe wie im Webinterface und ändert sich, wenn du das Web-Passwort änderst.",
+        "data": {
+          "host": "Host / IP",
+          "port": "Port",
+          "token": "API-Token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Roboter nicht erreichbar",
+      "invalid_auth": "Token abgelehnt"
+    },
+    "abort": {
+      "already_configured": "Dieser Roboter ist bereits eingerichtet"
+    }
+  }
+}
