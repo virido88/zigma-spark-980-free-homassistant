@@ -52,5 +52,27 @@
     "abort": {
       "already_configured": "This robot is already configured"
     }
+  },
+  "services": {
+    "update_schedule": {
+      "name": "Update schedule",
+      "description": "Change fields of a schedule."
+    },
+    "add_schedule": {
+      "name": "Add schedule",
+      "description": "Create a new schedule."
+    },
+    "delete_schedule": {
+      "name": "Delete schedule",
+      "description": "Delete a schedule."
+    },
+    "clean_area": {
+      "name": "Clean area",
+      "description": "Clean a rectangle in map cells."
+    },
+    "set_no_go_zone": {
+      "name": "Change no-go zone",
+      "description": "Add, change or delete no-go zones (experimental)."
+    }
   }
 }

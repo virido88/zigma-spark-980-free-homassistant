@@ -3,9 +3,10 @@
   "name": "Zigma Saugroboter",
   "codeowners": [],
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/zigma",
+  "documentation": "https://github.com/virido88/zigma-spark-980-free-homassistant",
+  "issue_tracker": "https://github.com/virido88/zigma-spark-980-free-homassistant/issues",
   "iot_class": "local_polling",
   "integration_type": "device",
   "requirements": [],
-  "version": "0.1.0"
+  "version": "0.2.0"
 }

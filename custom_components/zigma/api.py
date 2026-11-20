@@ -30,7 +30,11 @@ class ZigmaApi:
     ) -> None:
         self._session = session
         self._base = f"http://{host}:{port}"
-        self._headers = {"Authorization": f"Bearer {token}"}
+        self._headers = {
+            "Authorization": f"Bearer {token}",
+            # Robot rejects non-GET requests without this header.
+            "X-Zigma-Request": "1",
+        }
 
     async def _request(
         self, method: str, path: str, json: dict[str, Any] | None = None
@@ -78,3 +82,25 @@ class ZigmaApi:
     async def save_schedules(self, items: list[dict[str, Any]]) -> dict[str, Any]:
         """Replace the full schedule list (PUT /api/schedules)."""
         return await self._request("PUT", "/api/schedules", json={"items": items})
+
+    async def settings(self) -> dict[str, Any]:
+        """Return robot settings (GET /api/settings)."""
+        return await self._request("GET", "/api/settings")
+
+    async def put_setting(self, action: str, value: str) -> dict[str, Any]:
+        """Change one setting (PUT /api/settings). Value is always a string."""
+        return await self._request(
+            "PUT", "/api/settings", json={"action": action, "value": value}
+        )
+
+    async def events(self) -> dict[str, Any]:
+        """Return the last robot events (GET /api/events)."""
+        return await self._request("GET", "/api/events")
+
+    async def sessions(self) -> dict[str, Any]:
+        """Return the cleaning history (GET /api/sessions)."""
+        return await self._request("GET", "/api/sessions")
+
+    async def about(self) -> dict[str, Any]:
+        """Return installed component versions (GET /api/about)."""
+        return await self._request("GET", "/api/about")

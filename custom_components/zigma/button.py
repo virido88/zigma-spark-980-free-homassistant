@@ -1,28 +1,17 @@
-"""Buttons that start a cleaning run for one configured zone."""
+"""Buttons: start a cleaning run for one zone, and sync the robot clock."""
 
 from __future__ import annotations
 
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .api import ZigmaError
 from .const import CONF_ZONES, DOMAIN
-from .coordinator import ZigmaCoordinator
-
-# Same states the robot accepts for area cleaning (see robot agent issue_area).
-AREA_OK_STATES = {
-    "charging",
-    "PileCharging",
-    "DirCharging",
-    "Standby",
-    "idle",
-    "Pause",
-    "paused",
-}
+from .coordinator import ZigmaCoordinator, ZigmaExtraCoordinator
+from .services import async_clean_area
 
 
 async def async_setup_entry(
@@ -30,10 +19,21 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Create one button per configured zone."""
+    """Create one button per configured zone plus the NTP sync button."""
     coordinator: ZigmaCoordinator = hass.data[DOMAIN][entry.entry_id]
+    extra: ZigmaExtraCoordinator = hass.data[DOMAIN][f"{entry.entry_id}_extra"]
     zones = entry.options.get(CONF_ZONES, [])
-    async_add_entities(ZigmaZoneButton(coordinator, entry, zone) for zone in zones)
+    entities: list[ButtonEntity] = [ZigmaZoneButton(coordinator, entry, z) for z in zones]
+    entities.append(ZigmaNtpSyncButton(extra, entry))
+    async_add_entities(entities)
+
+
+def _device(entry: ConfigEntry) -> DeviceInfo:
+    return DeviceInfo(
+        identifiers={(DOMAIN, entry.entry_id)},
+        manufacturer="Zigma",
+        name=entry.title,
+    )
 
 
 class ZigmaZoneButton(ButtonEntity):
@@ -48,42 +48,26 @@ class ZigmaZoneButton(ButtonEntity):
         self._zone = dict(zone)
         self._attr_name = f"{zone['name']} saugen"
         self._attr_unique_id = f"{entry.entry_id}_zone_{zone['name']}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            manufacturer="Zigma",
-            name=entry.title,
-        )
+        self._attr_device_info = _device(entry)
 
     async def async_press(self) -> None:
-        """Check robot state and map, then send area_clean for this zone."""
-        status = self.coordinator.data or {}
-        work = status.get("working_status")
-        if status.get("error") not in (None, "NoError"):
-            raise HomeAssistantError(f"Roboter meldet Fehler: {status.get('error')}")
-        if work not in AREA_OK_STATES:
-            raise HomeAssistantError(
-                f"Flächenreinigung nur im Dock, im Standby oder pausiert möglich (aktuell: {work})"
-            )
+        """Send area_clean for this zone."""
+        rect = {k: self._zone[k] for k in ("x", "y", "width", "height")}
+        await async_clean_area(self.coordinator, rect)
 
-        api = self.coordinator.api
-        try:
-            mp = await api.map_data()
-            if not mp.get("available"):
-                raise HomeAssistantError("Karte ist gerade nicht verfügbar")
-            context = {
-                "map_id": mp.get("map_id"),
-                "width": mp.get("width"),
-                "height": mp.get("height"),
-                "map_origin": mp.get("map_origin"),
-            }
-            rect = {
-                "x": self._zone["x"],
-                "y": self._zone["y"],
-                "width": self._zone["width"],
-                "height": self._zone["height"],
-            }
-            await api.command("area_clean", rect=rect, map_context=context)
-        except ZigmaError as err:
-            raise HomeAssistantError(f"Flächenreinigung fehlgeschlagen: {err}") from err
 
-        await self.coordinator.async_request_refresh()
+class ZigmaNtpSyncButton(ButtonEntity):
+    """Ask the robot to sync its clock now."""
+
+    _attr_has_entity_name = True
+    _attr_entity_category = EntityCategory.CONFIG
+    _attr_name = "Uhrzeit synchronisieren"
+
+    def __init__(self, extra: ZigmaExtraCoordinator, entry: ConfigEntry) -> None:
+        self._extra = extra
+        self._attr_unique_id = f"{entry.entry_id}_ntp_sync"
+        self._attr_device_info = _device(entry)
+
+    async def async_press(self) -> None:
+        """Send the ntp_sync action."""
+        await self._extra.async_set_setting("ntp_sync", "true")

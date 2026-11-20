@@ -11,7 +11,9 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .coordinator import ZigmaScheduleCoordinator
-from .entity import ZigmaScheduleEntity
+from homeassistant.helpers.entity import EntityCategory
+
+from .entity import ZigmaScheduleEntity, ZigmaSettingEntity
 
 
 async def async_setup_entry(
@@ -37,6 +39,14 @@ async def async_setup_entry(
 
     _async_add_new()
     entry.async_on_unload(coordinator.async_add_listener(_async_add_new))
+
+    extra = hass.data[DOMAIN][f"{entry.entry_id}_extra"]
+    async_add_entities(
+        [
+            ZigmaSettingSwitch(extra, entry, "over_ridge", "Schwellen überfahren"),
+            ZigmaSettingSwitch(extra, entry, "continue_clean", "Reinigung fortsetzen"),
+        ]
+    )
 
 
 class ZigmaScheduleSwitch(ZigmaScheduleEntity, SwitchEntity):
@@ -77,3 +87,37 @@ class ZigmaScheduleSwitch(ZigmaScheduleEntity, SwitchEntity):
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Disable the schedule."""
         await self.coordinator.async_update_schedule(self._schedule_id, {"enabled": False})
+
+
+class ZigmaSettingSwitch(ZigmaSettingEntity, SwitchEntity):
+    """A boolean robot setting."""
+
+    _attr_entity_category = EntityCategory.CONFIG
+
+    def __init__(self, coordinator, entry: ConfigEntry, key: str, name: str) -> None:
+        super().__init__(coordinator, entry)
+        self._key = key
+        self._attr_name = name
+        self._attr_unique_id = f"{entry.entry_id}_{key}"
+
+    @property
+    def available(self) -> bool:
+        """Only if the robot reports the setting and allows edits."""
+        return (
+            super().available
+            and self.settings.get(self._key) is not None
+            and self.settings.get("options_editable", True) is not False
+        )
+
+    @property
+    def is_on(self) -> bool:
+        """Current value."""
+        return bool(self.settings.get(self._key))
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn on."""
+        await self.coordinator.async_set_setting(self._key, "true")
+
+    async def async_turn_off(self, **kwargs: Any) -> None:
+        """Turn off."""
+        await self.coordinator.async_set_setting(self._key, "false")

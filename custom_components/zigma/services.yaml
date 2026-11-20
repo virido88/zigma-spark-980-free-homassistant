@@ -1,0 +1,183 @@
+update_schedule:
+  fields:
+    schedule_id:
+      required: true
+      example: 1
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
+    entry_id:
+      selector:
+        config_entry:
+          integration: zigma
+    label:
+      selector:
+        text:
+    time:
+      example: "08:30"
+      selector:
+        text:
+    days:
+      description: "Weekdays 0-6 (as the robot counts them)."
+      example: [1, 2, 3, 4, 5]
+      selector:
+        select:
+          multiple: true
+          options: ["0", "1", "2", "3", "4", "5", "6"]
+    enabled:
+      selector:
+        boolean:
+    action:
+      selector:
+        select:
+          options: [clean, dock, random_song, play_song]
+    fan_power:
+      selector:
+        number:
+          min: 1
+          max: 3
+          mode: box
+    song:
+      selector:
+        text:
+
+add_schedule:
+  fields:
+    label:
+      required: true
+      selector:
+        text:
+    time:
+      required: true
+      example: "08:30"
+      selector:
+        text:
+    days:
+      required: true
+      example: [1, 2, 3, 4, 5]
+      selector:
+        select:
+          multiple: true
+          options: ["0", "1", "2", "3", "4", "5", "6"]
+    entry_id:
+      selector:
+        config_entry:
+          integration: zigma
+    enabled:
+      default: true
+      selector:
+        boolean:
+    action:
+      default: clean
+      selector:
+        select:
+          options: [clean, dock, random_song, play_song]
+    fan_power:
+      default: 3
+      selector:
+        number:
+          min: 1
+          max: 3
+          mode: box
+    song:
+      selector:
+        text:
+
+delete_schedule:
+  fields:
+    schedule_id:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 999
+          mode: box
+    entry_id:
+      selector:
+        config_entry:
+          integration: zigma
+
+clean_area:
+  fields:
+    x:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+    y:
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+    width:
+      required: true
+      selector:
+        number:
+          min: 2
+          max: 9999
+          mode: box
+    height:
+      required: true
+      selector:
+        number:
+          min: 2
+          max: 9999
+          mode: box
+    entry_id:
+      selector:
+        config_entry:
+          integration: zigma
+
+set_no_go_zone:
+  fields:
+    operation:
+      required: true
+      selector:
+        select:
+          options: [add, update, delete]
+    index:
+      description: "Zone number. Needed for update and delete."
+      selector:
+        number:
+          min: 0
+          max: 11
+          mode: box
+    x:
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+    y:
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+    width:
+      selector:
+        number:
+          min: 2
+          max: 9999
+          mode: box
+    height:
+      selector:
+        number:
+          min: 2
+          max: 9999
+          mode: box
+    restriction:
+      default: all
+      selector:
+        select:
+          options: [all, mop, vacuum]
+    entry_id:
+      selector:
+        config_entry:
+          integration: zigma

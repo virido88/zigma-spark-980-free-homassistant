@@ -7,7 +7,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import DOMAIN
-from .coordinator import ZigmaCoordinator, ZigmaScheduleCoordinator
+from .coordinator import ZigmaCoordinator, ZigmaExtraCoordinator, ZigmaScheduleCoordinator
 
 
 class ZigmaEntity(CoordinatorEntity[ZigmaCoordinator]):
@@ -54,3 +54,22 @@ class ZigmaScheduleEntity(CoordinatorEntity[ZigmaScheduleCoordinator]):
     def available(self) -> bool:
         """Unavailable if the schedule disappeared."""
         return super().available and self.schedule is not None
+
+
+class ZigmaSettingEntity(CoordinatorEntity[ZigmaExtraCoordinator]):
+    """Base for entities backed by /api/settings (and other extra data)."""
+
+    _attr_has_entity_name = True
+
+    def __init__(self, coordinator: ZigmaExtraCoordinator, entry: ConfigEntry) -> None:
+        super().__init__(coordinator)
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            manufacturer="Zigma",
+            name=entry.title,
+        )
+
+    @property
+    def settings(self) -> dict:
+        """Latest settings dict."""
+        return (self.coordinator.data or {}).get("settings") or {}

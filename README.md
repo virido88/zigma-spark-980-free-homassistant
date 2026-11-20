@@ -19,7 +19,16 @@ The robot must run the local control software from [bultza/zigma-spark-980-free]
 
 ## Installation
 
-### Via HACS (custom repository)
+### Via the Home Assistant Marketplace (2026.11 and newer)
+
+HACS is now part of Home Assistant as the Marketplace.
+
+1. Open **Settings → Marketplace**. Accept the warning on the first visit. Connect GitHub if asked.
+2. In the upper-right corner, select **Add from link**.
+3. Enter `virido88/zigma-spark-980-free-homassistant` under **GitHub link** and select **Add**. If asked, pick **Type** Integration.
+4. Open **Zigma Spark-980** in the list and select **Install**.
+
+### Via HACS (Home Assistant before 2026.11)
 
 1. In HACS, open **⋮ → Custom repositories**.
 2. Add `https://github.com/virido88/zigma-spark-980-free-homassistant` with category **Integration**.
@@ -48,10 +57,21 @@ Pressing the button sends the cleaning command to the robot. It works only when 
 
 To find the right coordinates, look at the map in the Zigma Free web interface.
 
+## More features (0.2.0)
+
+- **Map:** an image entity "Karte" shows the map, path, dock and no-go zones.
+- **Schedules:** switch, time and fan power per schedule. Services `zigma.add_schedule`, `zigma.update_schedule` (weekdays, action, label) and `zigma.delete_schedule`.
+- **Settings:** volume, name, time zone, NTP server, area unit, "over ridge" and "continue clean", plus a clock sync button.
+- **History:** sensors for the last cleaning report, the number of runs, the last event (log in attributes) and software versions.
+- **Services:** `zigma.clean_area` (any rectangle) and `zigma.set_no_go_zone` (add, update, delete).
+
+Not offered on purpose: reboot, restore master, custom shell command, map delete/restore, SSH keys, access key and Telegram.
+
 ## Known limitations
 
-- Schedules can be turned on and off and their time can be changed. Weekdays and fan speed cannot be edited in HA yet.
+- `zigma.set_no_go_zone` is experimental. The meaning of the `restriction` flags is guessed from the web UI. Test with care.
 - The robot runs schedules only in their scheduled minute. There is no "run now" for schedules.
+- Setting entities appear only if the robot reports them in `/api/settings`.
 - The integration is an early version and has not been tested on every robot variant.
 
 ## Development

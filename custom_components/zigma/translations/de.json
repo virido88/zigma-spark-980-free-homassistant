@@ -52,5 +52,27 @@
     "abort": {
       "already_configured": "Dieser Roboter ist bereits eingerichtet"
     }
+  },
+  "services": {
+    "update_schedule": {
+      "name": "Zeitplan ändern",
+      "description": "Ändert Felder eines Zeitplans."
+    },
+    "add_schedule": {
+      "name": "Zeitplan anlegen",
+      "description": "Legt einen neuen Zeitplan an."
+    },
+    "delete_schedule": {
+      "name": "Zeitplan löschen",
+      "description": "Löscht einen Zeitplan."
+    },
+    "clean_area": {
+      "name": "Fläche saugen",
+      "description": "Saugt ein Rechteck in Kartenzellen."
+    },
+    "set_no_go_zone": {
+      "name": "Sperrzone ändern",
+      "description": "Legt Sperrzonen an, ändert oder löscht sie (experimentell)."
+    }
   }
 }
